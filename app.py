@@ -15,6 +15,7 @@ from tqdm import tqdm
 import logging
 import gc
 import gzip
+import re
 
 # Import from embed_texts.py
 from embed_texts import TextExtractor, AraBERTEmbedder
@@ -30,7 +31,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-
 class OnTheFlyAnalyzer:
     """Analyze word context diversity without storing embeddings on disk"""
 
@@ -38,6 +38,13 @@ class OnTheFlyAnalyzer:
         self.metadata_file = metadata_file
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(exist_ok=True)
+
+        # Load stop words and non-Arabic words
+        logger.info("Loading filter lists...")
+        self.arabic_stop_words = self._load_stop_words('db_training/stop_words/arabic_stop_words.txt')
+        self.non_arabic_words = self._load_non_arabic_words('db_training/stop_words/non_arabic_words_list.txt')
+        logger.info(f"Loaded {len(self.arabic_stop_words)} Arabic stop words")
+        logger.info(f"Loaded {len(self.non_arabic_words)} non-Arabic word patterns")
 
         # Batch accumulator (for ~10-15 texts at a time)
         self.current_batch = defaultdict(lambda: {
@@ -64,8 +71,58 @@ class OnTheFlyAnalyzer:
             'total_texts': 0,
             'processed': 0,
             'errors': 0,
-            'total_words': 0
+            'total_words': 0,
+            'filtered_words': 0
         }
+
+    def _load_stop_words(self, filepath: str) -> set:
+        """Load stop words from a text file."""
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                words = set(line.strip() for line in f if line.strip())
+            logger.info(f"Loaded {len(words)} words from {filepath}")
+            return words
+        except FileNotFoundError:
+            logger.warning(f"Stop words file not found: {filepath}")
+            return set()
+
+    def _load_non_arabic_words(self, filepath: str) -> set:
+        """Load non-Arabic words list and extract Arabic-only patterns."""
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                raw_words = [line.strip() for line in f if line.strip()]
+
+            # Extract only Arabic characters from each word
+            arabic_patterns = set()
+            for word in raw_words:
+                arabic_only = self._extract_arabic_only(word)
+                if arabic_only:
+                    arabic_patterns.add(arabic_only)
+
+            logger.info(f"Extracted {len(arabic_patterns)} Arabic patterns from {filepath}")
+            return arabic_patterns
+        except FileNotFoundError:
+            logger.warning(f"Non-Arabic words file not found: {filepath}")
+            return set()
+
+    @staticmethod
+    def _extract_arabic_only(text: str) -> str:
+        """Extract only Arabic characters from text, removing numbers and other characters."""
+        arabic_chars = re.findall(r'[\u0600-\u06FF]+', text)
+        return ''.join(arabic_chars)
+
+    def _should_filter_word(self, word: str) -> bool:
+        """Determine if a word should be filtered out."""
+        # Filter if it's an Arabic stop word
+        if word in self.arabic_stop_words:
+            return True
+
+        # Extract Arabic-only version and check against non-Arabic words list
+        arabic_only = self._extract_arabic_only(word)
+        if arabic_only and arabic_only in self.non_arabic_words:
+            return True
+
+        return False
 
 
     def _initialize_output_files(self):
@@ -94,11 +151,25 @@ class OnTheFlyAnalyzer:
                 return False
 
             # 3. Accumulate word embeddings in current batch (compressed to float16)
+            # Apply filtering before accumulation
             text_unique_words = set()
+            filtered_count = 0
+
             for word, embedding in zip(words, word_embeddings):
+                # Skip if word should be filtered
+                if self._should_filter_word(word):
+                    filtered_count += 1
+                    continue
+
                 self.current_batch[word]['occurrences'].append(embedding.astype(np.float16))
                 self.current_batch[word]['texts'].append(version_uri)
                 text_unique_words.add(word)
+
+            # Update filtering stats
+            self.stats['filtered_words'] += filtered_count
+
+            if filtered_count > 0:
+                logger.debug(f"Filtered {filtered_count} words from {version_uri}")
 
             # 4. Write text statistics
             with open(self.text_stats_file, 'a', encoding='utf-8') as f:
@@ -320,7 +391,8 @@ class OnTheFlyAnalyzer:
         logger.info("="*80)
         logger.info(f"Total texts processed: {self.stats['processed']:,}")
         logger.info(f"Total errors: {self.stats['errors']}")
-        logger.info(f"Total unique words: {len(df):,}")
+        logger.info(f"Total unique words analyzed: {len(df):,}")
+        logger.info(f"Total words filtered (stop words + non-Arabic): {self.stats['filtered_words']:,}")
         logger.info(f"Total word occurrences: {df['total_occurrences'].sum():,}")
         logger.info(f"\nResults saved to: {self.output_dir}")
         logger.info(f"  - {word_file.name}")
@@ -348,7 +420,7 @@ def main():
 
     analyzer = OnTheFlyAnalyzer(
         metadata_file="openiti_metadata.parquet",
-        output_dir="../word_context_analysis"
+        output_dir="jobs/TF_stat/word_context_analysis"
     )
 
     # Process all texts (one at a time, no batching)
