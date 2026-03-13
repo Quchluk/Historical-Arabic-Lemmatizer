@@ -244,13 +244,69 @@
         /* Hero Stats */
         .hero-stats {
             display: flex;
-            gap: 2rem;
-            margin-top: 3rem;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 2.5rem;
             padding-top: 2rem;
             border-top: 1px solid var(--border);
             opacity: 0;
             animation: fadeUp 0.8s 0.5s forwards;
         }
+
+        .stat-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-label-left {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-3);
+            width: 200px;
+            flex-shrink: 0;
+        }
+
+        .stat-bar-outer {
+            flex: 1;
+            height: 3px;
+            background: var(--bg-3);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .stat-bar-inner {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            width: 0;
+            animation: barFill 1.4s ease forwards;
+            animation-delay: 0.8s;
+        }
+
+        @keyframes barFill {
+            to { width: var(--fill-w, 80%); }
+        }
+
+        .stat-bar-inner.teal {
+            background: linear-gradient(90deg, var(--teal), #7dd8cc);
+        }
+
+        .stat-bar-inner.dim {
+            background: linear-gradient(90deg, var(--text-3), var(--text-2));
+        }
+
+        .stat-val {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--gold-light);
+            width: 56px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .stat-val.teal { color: var(--teal); }
+        .stat-val.dim { color: var(--text-3); }
 
         .stat-item {}
         .stat-num {
@@ -917,17 +973,23 @@
                     </a>
                 </div>
                 <div class="hero-stats">
-                    <div class="stat-item">
-                        <div class="stat-num">14,204</div>
-                        <div class="stat-label">Tokens Processed</div>
+                    <div class="stat-row">
+                        <span class="stat-label-left">baseline (classical tools)</span>
+                        <div class="stat-bar-outer"><div class="stat-bar-inner dim" style="--fill-w:95%"></div></div>
+                        <span class="stat-val dim">~95%</span>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-num">98.7%</div>
-                        <div class="stat-label">Accuracy Rate</div>
+                    <div class="stat-row">
+                        <span class="stat-label-left">ArLem accuracy</span>
+                        <div class="stat-bar-outer"><div class="stat-bar-inner" style="--fill-w:97%"></div></div>
+                        <span class="stat-val">~97%</span>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-num">312</div>
-                        <div class="stat-label">Anomalies Resolved</div>
+                    <div class="stat-row">
+                        <span class="stat-label-left">deep errors caught</span>
+                        <div class="stat-bar-outer"><div class="stat-bar-inner teal" style="--fill-w:40%"></div></div>
+                        <span class="stat-val teal">~40%</span>
+                    </div>
+                    <div style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--text-3);padding-top:0.25rem;">
+                        OpenITI corpus · 1,400 yrs of Arabic · evaluation ongoing
                     </div>
                 </div>
             </div>
@@ -1167,6 +1229,79 @@
         </div>
     </section>
 
+    <!-- HONEST ASSESSMENT -->
+    <section class="section">
+        <div class="container">
+            <div class="section-tag reveal">Honest Assessment</div>
+            <h2 class="reveal">What it does.<br><em class="italic">What it doesn't.</em></h2>
+            <p class="section-intro reveal">This is a research tool in active development, not a solved product. Here is a clear-eyed view of its current capabilities and known limitations.</p>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;" class="reveal">
+
+                <!-- What works -->
+                <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:2rem;">
+                    <div style="font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--teal);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.5rem;">
+                        <span style="width:6px;height:6px;border-radius:50%;background:var(--teal);display:inline-block;"></span>
+                        Working Well
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:1.25rem;">
+                        <div>
+                            <div style="font-size:0.95rem;margin-bottom:0.3rem;font-weight:500;">Catches what baselines miss</div>
+                            <div style="font-size:0.85rem;color:var(--text-2);line-height:1.7;">~40% of the deep semantic errors that standard classical tools silently pass through are flagged and corrected.</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.95rem;margin-bottom:0.3rem;font-weight:500;">Hybrid approach outperforms either tool alone</div>
+                            <div style="font-size:0.85rem;color:var(--text-2);line-height:1.7;">Classical morphology is fast and transparent. LLMs are context-aware. Neither is sufficient alone — combining them is the point.</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.95rem;margin-bottom:0.3rem;font-weight:500;">Hallucination guard via embedding check</div>
+                            <div style="font-size:0.85rem;color:var(--text-2);line-height:1.7;">The LLM's output is verified against the semantic map, preventing confident-sounding invented lemmas from entering the corpus.</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.95rem;margin-bottom:0.3rem;font-weight:500;">Efficient — LLM only where needed</div>
+                            <div style="font-size:0.85rem;color:var(--text-2);line-height:1.7;">TF filtering and cosine distance thresholds mean only genuine suspects reach the expensive LLM step.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Known limits -->
+                <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:2rem;">
+                    <div style="font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--red);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.5rem;">
+                        <span style="width:6px;height:6px;border-radius:50%;background:var(--red);display:inline-block;"></span>
+                        Known Limitations
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:1.25rem;">
+                        <div>
+                            <div style="font-size:0.95rem;margin-bottom:0.3rem;font-weight:500;">Anisotropy in embedding space</div>
+                            <div style="font-size:0.85rem;color:var(--text-2);line-height:1.7;">High-dimensional vectors warp direction. Cosine similarity can be misleading — "close" doesn't always mean semantically similar in 768 dimensions.</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.95rem;margin-bottom:0.3rem;font-weight:500;">Root gravity problem</div>
+                            <div style="font-size:0.85rem;color:var(--text-2);line-height:1.7;">Arabic's root system causes كَتَبَ, كِتَاب, and مَكْتَبَة to cluster tightly, making it hard to detect grammatical shifts within the same root family.</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.95rem;margin-bottom:0.3rem;font-weight:500;">No universal accuracy — corpus matters</div>
+                            <div style="font-size:0.85rem;color:var(--text-2);line-height:1.7;">Tuned for 8th-century poetry can break on 15th-century legal texts. The OpenITI corpus spans 1,400 years — "universal accuracy" is a moving target.</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.95rem;margin-bottom:0.3rem;font-weight:500;">Ground truth is sparse</div>
+                            <div style="font-size:0.85rem;color:var(--text-2);line-height:1.7;">Zipf's law applies — 1,000 examples for common forms, one for rare ones. Existing gold standards are built for Modern Standard Arabic, not historical texts.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Future direction card -->
+            <div style="margin-top:1.5rem;background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:12px;padding:1.5rem 2rem;display:flex;align-items:center;gap:1.5rem;" class="reveal">
+                <div style="font-family:'Playfair Display',serif;font-size:2rem;color:var(--gold);flex-shrink:0;">→</div>
+                <div>
+                    <div style="font-size:0.95rem;font-weight:500;margin-bottom:0.3rem;color:var(--gold-light);">Next: Beyond cosine distance</div>
+                    <div style="font-size:0.85rem;color:var(--text-2);line-height:1.7;">Moving from simple cosine similarity to trained neural clustering (HDBSCAN / UMAP) to better separate true semantic shifts from topic-level noise in the embedding space.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- ARCHITECTURE -->
     <section id="architecture" class="section">
         <div class="container">
@@ -1261,8 +1396,8 @@
                     <span class="t-blank"></span>
                     <div class="t-comment"># Output</div>
                     <div style="padding-left:0.25rem">Initializing models... <span class="t-ok">[OK]</span></div>
-                    <div>Processing <span style="color:var(--gold)">14,204</span> tokens across corpus...</div>
-                    <div><span class="t-ok">✓ 312 contextual anomalies identified and rectified.</span></div>
+                    <div>Processing corpus... <span style="color:var(--gold)">flagging suspects via cosine threshold</span></div>
+                    <div><span class="t-ok">✓ Anomalies identified and dispatched to LLM resolver.</span></div>
                 </div>
             </div>
 
