@@ -1,3 +1,5 @@
+# Gitignore for Python Project
+
 # --- Python ---
 __pycache__/
 *.py[cod]
@@ -9,6 +11,8 @@ dist/
 *.egg-info/
 .installed.cfg
 *.egg
+.pytest_cache/
+.mypy_cache/
 
 # --- Virtual Environments ---
 venv/
@@ -33,23 +37,29 @@ ENV/
 .AppleDouble
 .LSOverride
 Thumbs.db
+desktop.ini
 
-# --- Environment Variables ---
+# --- Environment Variables (CRITICAL) ---
 .env
 .env.local
 .env.*.local
+! .env.example
 
 # --- Logs ---
 *.log
 logs/
+metadata_extraction.log
 
-# --- Data & Artifacts (New Structure) ---
+# --- Data & Artifacts ---
 data/
 models/
 checkpoints/
 embeddings/
 .cache/
 huggingface/
+# Keep essential data structure if needed, but ignore content
+!data/.keep
+!models/.keep
 
 # --- Notebooks ---
 .ipynb_checkpoints/
@@ -66,7 +76,6 @@ huggingface/
 /validation_reports
 /farasa_lemmatized
 /llm_lemmatized
-/clean_lemmatized
 /TF-LLM-lemmatizer
 /Quranic
 /tools
@@ -89,5 +98,5 @@ tf_lemma_cache.json
 
 # --- Archive ---
 _archive/
-scripts
-.env
+# scripts/  <-- Kept if they are useful dev tools, otherwise ignore
+
