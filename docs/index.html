@@ -958,9 +958,9 @@
         <div class="container hero-grid">
             <div class="hero-left">
                 <div class="hero-eyebrow">v1.2 · MIT License · Open Source</div>
-                <h1>Precision<br><em>Arabic</em><br>Lemmatization.</h1>
+                <h1>Hybrid<br><em>Arabic</em><br>Lemmatization.</h1>
                 <p class="hero-desc">
-                    A deterministic pipeline for historical Arabic corpora. ArLem fuses rule-based morphological analysis, high-dimensional anomaly detection, and LLM disambiguation to resolve the root-sharing ambiguity classical NLP cannot.
+                    A hybrid pipeline for historical Arabic corpora. ArLem combines rule-based morphological analysis, embedding-based error detection, and an LLM fallback to catch the root-sharing mistakes classical tools miss.
                 </p>
                 <div class="hero-cta">
                     <a href="https://github.com/Quchluk/Historical-Arabic-Lemmatizer" class="btn-primary mono">
@@ -997,7 +997,7 @@
             <div class="hero-right">
                 <div class="demo-panel">
                     <div class="demo-panel-header">
-                        <span class="demo-panel-title mono">Live Analysis · Classical Text Corpus</span>
+                        <span class="demo-panel-title mono">Example · Classical Legal Text</span>
                         <div class="status-dot"></div>
                     </div>
                     <div class="demo-panel-body">
@@ -1079,9 +1079,9 @@
     <!-- PIPELINE -->
     <section id="pipeline" class="section">
         <div class="container">
-            <div class="section-tag reveal">Resolution Pipeline</div>
-            <h2 class="reveal">Three-layer verification.<br><em class="italic">Zero root ambiguity.</em></h2>
-            <p class="section-intro reveal">Engineered to defeat the inherent complexity of Arabic morphology — where a single three-letter root may generate hundreds of grammatically valid lemmas with divergent semantic fields.</p>
+            <div class="section-tag reveal">How It Works</div>
+            <h2 class="reveal">Three steps.<br><em class="italic">One hard problem.</em></h2>
+            <p class="section-intro reveal">Arabic's root-and-pattern system means a single three-letter root can produce dozens of grammatically valid lemmas with completely different meanings. Classical tools guess. ArLem checks.</p>
 
             <div class="steps-container reveal">
                 <!-- STEP 1 -->
@@ -1089,7 +1089,7 @@
                     <div class="step-number">1</div>
                     <div class="step-info">
                         <h3>Candidate Generation</h3>
-                        <p>The corpus is tokenized and passed through CAMeL Tools' morphological analyzer, which generates all structurally valid lemma candidates for each Arabic surface form. This rule-based layer produces a baseline candidate array.</p>
+                        <p>The corpus is tokenized and passed through CAMeL Tools' morphological analyzer, which generates all structurally valid lemma candidates for each surface form. This gives the baseline set of guesses that the next two steps then check.</p>
                         <div class="step-tags">
                             <span class="tag gold">CAMeL Tools</span>
                             <span class="tag">Morphological Parsing</span>
@@ -1134,7 +1134,7 @@
                     <div class="step-number">2</div>
                     <div class="step-info">
                         <h3>Vector Projection & Anomaly Detection</h3>
-                        <p>Tokens sharing the same assigned lemma are embedded into high-dimensional semantic space. Pairwise cosine similarity is computed across the cluster. Tokens with significantly low similarity scores — statistical outliers — are flagged as probable lemmatization errors (homographs or root-sharing conflicts).</p>
+                        <p>Tokens sharing the same assigned lemma are embedded and compared using cosine similarity. Tokens that score unusually low against the rest of their group are flagged — they're likely homographs or root-sharing words that got pulled into the wrong lemma bucket.</p>
                         <div class="step-tags">
                             <span class="tag teal">Cosine Similarity</span>
                             <span class="tag teal">Vector Embeddings</span>
@@ -1188,8 +1188,8 @@
                 <div class="step-item" style="margin-top:2px">
                     <div class="step-number">3</div>
                     <div class="step-info">
-                        <h3>LLM Contextual Disambiguation</h3>
-                        <p>Flagged anomalies trigger a structured prompt to an external language model via OpenRouter. The model receives the ambiguous token alongside its local syntactic window and returns a precision lemma with confidence score, enabling context-aware resolution that purely statistical approaches cannot achieve.</p>
+                        <h3>LLM Correction</h3>
+                        <p>Flagged tokens are sent to an LLM via OpenRouter with the surrounding sentence as context. The model re-evaluates which lemma actually fits. This is the expensive step — it only runs on the suspects, not the whole corpus.</p>
                         <div class="step-tags">
                             <span class="tag gold">OpenRouter API</span>
                             <span class="tag">Context Window</span>
@@ -1409,7 +1409,7 @@
         <div class="container footer-inner">
             <div class="footer-left">
                 <div class="footer-logo">Ar<span>Lem</span></div>
-                <div class="footer-desc">MIT License · Built for precision NLP on historical Arabic.</div>
+                <div class="footer-desc">MIT License · Work in progress.</div>
             </div>
             <ul class="footer-links">
                 <li><a href="https://github.com/Quchluk/Historical-Arabic-Lemmatizer">GitHub</a></li>
