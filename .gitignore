@@ -1,33 +1,92 @@
-.idea
-/db
-/Quranic
-/TF-LLM-lemmatizer
-/tools
-/db_training
-/jobs
-
-# PyCharm
-.idea/
-*.iml
-*.iws
-.idea_modules/
-
-# Python
+# --- Python ---
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
+build/
+dist/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# --- Virtual Environments ---
 venv/
 env/
 ENV/
-.venv
-*.egg-info/
-dist/
-build/
+.venv/
 
-# macOS
+# --- IDEs ---
+.idea/
+.vscode/
+*.swp
+*.swo
+*.iml
+*.iws
+.idea_modules/
+
+# --- Operating System ---
 .DS_Store
+.DS_Store?
+._*
+.Trashes
 .AppleDouble
 .LSOverride
-._*
+Thumbs.db
+
+# --- Environment Variables ---
+.env
+.env.local
+.env.*.local
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Data & Artifacts (New Structure) ---
+data/
+models/
+checkpoints/
+embeddings/
+.cache/
+huggingface/
+
+# --- Notebooks ---
+.ipynb_checkpoints/
+*.ipynb
+
+# --- Legacy/Root level folders to ignore ---
+/db
+/db_training
+/jobs
+/lemma_registry
+/camel_lemmatized
+/clean_lemmatized
+/spread_validation
+/validation_reports
+/farasa_lemmatized
+/llm_lemmatized
+/clean_lemmatized
+/TF-LLM-lemmatizer
+/Quranic
+/tools
+/farasapy
+/farasa jar
+
+# --- Specific File Types & Large Files ---
+*.pt
+*.pth
+*.pkl
+*.pickle
+*.parquet
+*.csv.gz
+openiti_metadata.parquet
+
+# --- State Files ---
+pipeline_state.json
+pipeline_parallel_state.json
+tf_lemma_cache.json
+
+# --- Archive ---
+_archive/
+scripts
