@@ -90,3 +90,4 @@ tf_lemma_cache.json
 # --- Archive ---
 _archive/
 scripts
+.env
